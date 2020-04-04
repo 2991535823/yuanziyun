@@ -1,0 +1,9 @@
+<litepal>
+    <dbname value="yuan_zi_yun"/>
+    <version value="2"/>
+    <list>
+        <mapping class="com.myapp.yuanzi.db.Orgs"/>
+        <mapping class="com.myapp.yuanzi.db.DeviceGroup"/>
+        <mapping class="com.myapp.yuanzi.db.Device"/>
+    </list>
+</litepal>
