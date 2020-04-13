@@ -3,9 +3,11 @@ package com.myapp.yuanzi.util;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.myapp.yuanzi.db.Device;
 import com.myapp.yuanzi.db.DeviceGroup;
 import com.myapp.yuanzi.db.Orgs;
+import com.myapp.yuanzi.json.Msg;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,5 +83,15 @@ public class Utility {
             }
         }
         return false;
+    }
+    public static Msg handMsgResponse(String response){
+        try {
+            JSONObject msgDate=new JSONObject(response);
+            String msgDateString=msgDate.getString("data");
+            return new Gson().fromJson(msgDateString,Msg.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -104,6 +104,7 @@ public class ChooseDeviceFragment extends Fragment {
         back_Button.setVisibility(View.GONE);
         orgsList= DataSupport.findAll(Orgs.class);
         if (orgsList.size()>0){
+            //本地查询
             dataList.clear();
             for (Orgs orgs:orgsList){
                 dataList.add("机构名称:"+orgs.getOrgName()+"\n机构ID:"+orgs.getOrgCode()+
@@ -112,6 +113,7 @@ public class ChooseDeviceFragment extends Fragment {
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             selectedLevel=LEVEL_ORGS;
+            //更新数据
             DataSupport.deleteAll(Orgs.class);
         }else {
             //服务器查询
