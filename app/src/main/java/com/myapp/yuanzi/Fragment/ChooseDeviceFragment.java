@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.myapp.yuanzi.ConstString.ConstStrings;
+import com.myapp.yuanzi.DeviceData;
 import com.myapp.yuanzi.R;
 import com.myapp.yuanzi.db.Device;
 import com.myapp.yuanzi.db.DeviceGroup;
@@ -52,7 +53,7 @@ public class ChooseDeviceFragment extends Fragment {
     private DeviceGroup selectedGroup;
     private Device selectedDevice;
     private int selectedLevel;
-
+    private DeviceData device;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -74,13 +75,18 @@ public class ChooseDeviceFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (selectedLevel==LEVEL_ORGS){
                     selectedOrg=orgsList.get(i);//获取org对象
+                    device.setDeviceOrgId(selectedOrg.getOrgCode());
                     //查询组
                     queryGroup();
                 }else if (selectedLevel==LEVEL_GROUP){
                     selectedGroup=groupList.get(i);
+                    device.setDeviceGroupId(selectedGroup.getDeviceGroupId());
                     queryDevice();
                 }else if(selectedLevel==LEVEL_DEVICE){
                     selectedDevice=deviceList.get(i);
+                    device.setDeviceId(selectedDevice.getDeviceId());
+                    device.setDeviceNumber(selectedDevice.getDeviceName());
+                    //启动设备界面
                 }
             }
         });
