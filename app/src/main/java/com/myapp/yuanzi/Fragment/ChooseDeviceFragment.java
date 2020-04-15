@@ -65,6 +65,14 @@ public class ChooseDeviceFragment extends Fragment {
         listView=view.findViewById(R.id.list_view);
         adapter=new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,dataList);
         listView.setAdapter(adapter);
+        if(getContext() instanceof MsgActivity) {
+            //获取状态栏高度
+            int statusBarHeight = 0;
+            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0)
+                statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            view.findViewById(R.id.choose_device_fragment).setPadding(0, statusBarHeight, 0, 0);
+        }
         return view;
     }
 
@@ -79,6 +87,7 @@ public class ChooseDeviceFragment extends Fragment {
                     selectedOrg=orgsList.get(i);//获取org对象
                     Log.d(ConstStrings.TAG, "onItemClick: "+selectedOrg.getOrgCode());
                     device.setDeviceOrgId(selectedOrg.getOrgCode());
+                    ConstStrings.ORG_ID=selectedOrg.getOrgCode();
                     //查询组
                     queryGroup();
                 }else if (selectedLevel==LEVEL_GROUP){

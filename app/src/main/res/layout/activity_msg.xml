@@ -1,55 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:layout_width="match_parent"
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/holo_green_light">
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-        android:background="@android:color/holo_orange_light">
-        <ScrollView
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:openDrawer="start"
+        android:id="@+id/drawer_layout">
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="12"
-            android:id="@+id/device_layout">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:fitsSystemWindows="true">
-            <include layout="@layout/title"/>
-            <include layout="@layout/device_status_now"/>
-            <include layout="@layout/device_status" />
-            </LinearLayout>
-        </ScrollView>
-
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-        android:background="#fff">
-
-        <EditText
-            android:id="@+id/send_msg_to_dtu"
-            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="5"
-            android:hint="发送消息给设备"
-            android:inputType="text" />
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/send_msg_btn"
-                android:background="@drawable/send"
-                />
-        </LinearLayout>
+            android:id="@+id/swipe_Layout">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/device_layout">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:fitsSystemWindows="true">
+                    <include layout="@layout/title"/>
+                    <include layout="@layout/device_status_now"/>
+                    <include layout="@layout/device_status" />
+                    <include layout="@layout/chat"/>
+                </LinearLayout>
+            </ScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.myapp.yuanzi.Fragment.ChooseDeviceFragment"
+            android:layout_gravity="start"
+            />
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 
 
-</LinearLayout>
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
