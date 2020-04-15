@@ -8,38 +8,41 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="3"
-        android:background="@android:color/holo_orange_light">
+        android:layout_weight="3">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/device_start_time"
             android:textColor="#fff"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:text="start:12:43"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/device_stop_time"
             android:textColor="#fff"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:text="stop:12:53"
+            />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/device_rest_time"
             android:textColor="#fff"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:text="rest:2min"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@android:color/holo_green_dark">
+        android:layout_weight="1">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="60sp"
             android:id="@+id/device_pulse"
-            android:textColor="#fff"/>
+            android:textColor="#fff"
+            android:text="62"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -17,9 +19,17 @@ import android.widget.TextView;
 import com.myapp.yuanzi.ConstString.ConstStrings;
 import com.myapp.yuanzi.json.Msg;
 import com.myapp.yuanzi.json.MsgItem;
+import com.myapp.yuanzi.util.HttpUtil;
 import com.myapp.yuanzi.util.Utility;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MsgActivity extends AppCompatActivity {
     private ScrollView deviceLayout;
@@ -55,8 +65,10 @@ public class MsgActivity extends AppCompatActivity {
         deviceStatusHistoryLayout=findViewById(R.id.device_status_history_layout);
         final String  deviceNumber;
         SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
-        String deviceInfo=sharedPreferences.getString("lastInfo",null);
+        String deviceInfo=sharedPreferences.getString("info",null);
+
         if (deviceInfo!=null){
+            Log.d(ConstStrings.TAG, deviceInfo);
             Msg deviceMsg= Utility.handMsgResponse(deviceInfo);
             List<MsgItem> msgItemList=deviceMsg.msgItemList;//信息列表
             MsgItem deviceLastMsg=msgItemList.get(msgItemList.size()-1);//最后一条信息
@@ -66,16 +78,57 @@ public class MsgActivity extends AppCompatActivity {
         }else {
             //网络请求
 
-            //deviceData=(DeviceData)getIntent().getSerializableExtra("devicedata");//意图里面获取deviceNumber
+            deviceData=(DeviceData)getIntent().getSerializableExtra("devicedata");//意图里面获取deviceNumber
             deviceLayout.setVisibility(View.INVISIBLE);//设置页面不可见
-            //requestDeviceStatus(deviceData.getDeviceNumber());//发起网络请求
+            requestDeviceStatus(deviceData.getDeviceOrgId(),deviceData.getDeviceNumber());//发起网络请求
         }
     }
     private void showAllMsg(Msg msg){
         List<MsgItem> msgItemList=msg.msgItemList;//信息列表
         MsgItem deviceLastMsg=msgItemList.get(msgItemList.size()-1);//最后一条信息
+        String lastinfo=deviceLastMsg.dtuSendCloudMsg;
+        Log.d(ConstStrings.TAG, "showAllMsg: "+lastinfo);
+        for (MsgItem item:msgItemList){
+            View view= LayoutInflater.from(this).inflate(R.layout.device_history_msg_item,
+                    deviceStatusHistoryLayout,false);
+            TextView testmsg=view.findViewById(R.id.device_history_start_time);
+            testmsg.setText(item.dtuSendCloudMsg);
+            deviceStatusHistoryLayout.addView(view);
+        }
+        deviceLayout.setVisibility(View.VISIBLE);
+
     }
-    private void requestDeviceStatus(String devicenumber){
-        String url= ConstStrings.HTTP_ADDRESS+"/orgs/";
+    private void requestDeviceStatus(int orgid,String devicenumber){
+        Log.d(ConstStrings.TAG, "requestDeviceStatus: "+orgid+"number:"+devicenumber);
+        String url= ConstStrings.HTTP_ADDRESS+"/orgs/"+orgid+"/devicepacket/"+devicenumber+"?limit=10";
+        Log.d(ConstStrings.TAG, "\nrequestDeviceStatus: "+url);
+        HttpUtil.sendOkHttpRequest(url, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+                Log.d(ConstStrings.TAG, "onFailure: httpRequest");
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final String responseText=response.body().string();
+                Log.d(ConstStrings.TAG, "onResponse: "+responseText);
+                final Msg msg=Utility.handMsgResponse(responseText);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (msg!=null){
+                            SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(MsgActivity.this).edit();
+                            editor.putString("info",responseText);
+                            editor.apply();
+                            showAllMsg(msg);
+                        }else {
+                            Log.d(ConstStrings.TAG, "onResponse wrong");
+                        }
+                    }
+                });
+            }
+        });
+
     }
 }
