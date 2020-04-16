@@ -24,6 +24,7 @@ import com.myapp.yuanzi.ConstString.ConstStrings;
 import com.myapp.yuanzi.json.Msg;
 import com.myapp.yuanzi.json.MsgItem;
 import com.myapp.yuanzi.util.HttpUtil;
+import com.myapp.yuanzi.util.LogUtil;
 import com.myapp.yuanzi.util.StringUtil;
 import com.myapp.yuanzi.util.Utility;
 
@@ -90,7 +91,7 @@ public class MsgActivity extends AppCompatActivity {
                 orgid=sharedPreferences.getInt("orgid",0);
                 deviceNumberString=sharedPreferences.getString("devicenumber",null);
                 requestDeviceStatus(orgid,deviceNumberString);
-                Log.d(ConstStrings.TAG, "onRefresh: "+orgid+deviceNumberString);
+                LogUtil.d(ConstStrings.TAG, "onRefresh: "+orgid+deviceNumberString);
             }
         });
         //抽屉按钮事件
@@ -109,7 +110,7 @@ public class MsgActivity extends AppCompatActivity {
         if (msgItemList.size()>0){
             deviceLastMsg=msgItemList.get(0);//DTU发往原子云的最后一条信息
             lastInfo=deviceLastMsg.dtuSendCloudMsg;//或者数据
-            Log.d(ConstStrings.TAG, "showAllMsg: "+lastInfo);//打印数据
+            LogUtil.d(ConstStrings.TAG, "showAllMsg: "+lastInfo);//打印数据
             deviceNumberText.setText(deviceLastMsg.deviceNumber);//显示设备编号
             //lastInfo数据解析，展示
 
@@ -147,17 +148,17 @@ public class MsgActivity extends AppCompatActivity {
 
     }
     public void requestDeviceStatus(final int orgid, final String devicenumber){
-        Log.d(ConstStrings.TAG, "requestDeviceStatus: "+orgid+"number:"+devicenumber);//打印形参
+        LogUtil.d(ConstStrings.TAG, "requestDeviceStatus: "+orgid+"number:"+devicenumber);//打印形参
 
         String url= ConstStrings.HTTP_ADDRESS+"/orgs/"+orgid+"/devicepacket/"+devicenumber+"?limit=10";//拼接Url limit限制为10;
 
-        Log.d(ConstStrings.TAG, "\nrequestDeviceStatus: "+url);//打印URL
+        LogUtil.d(ConstStrings.TAG, "\nrequestDeviceStatus: "+url);//打印URL
         //发起网络请求
         HttpUtil.sendOkHttpRequest(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
-                Log.d(ConstStrings.TAG, "onFailure: httpRequest");
+                LogUtil.d(ConstStrings.TAG, "onFailure: httpRequest");
                 refreshLayout.setRefreshing(false);
                 //toast提醒
                 //code
@@ -166,7 +167,7 @@ public class MsgActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 final String responseText=response.body().string();
-                Log.d(ConstStrings.TAG, "onResponse: "+responseText);//打印返回的原始数据
+                LogUtil.d(ConstStrings.TAG, "onResponse: "+responseText);//打印返回的原始数据
                 final Msg msg=Utility.handMsgResponse(responseText);//数据解析为msg (json实体类)
                 //主线程Ui操作
                 runOnUiThread(new Runnable() {
@@ -182,7 +183,7 @@ public class MsgActivity extends AppCompatActivity {
                             //展示数据
                             showAllMsg(msg,devicenumber);
                         }else {
-                            Log.d(ConstStrings.TAG, "handMsgResponse wrong");
+                            LogUtil.d(ConstStrings.TAG, "handMsgResponse wrong");
                         }
                         refreshLayout.setRefreshing(false);
                     }

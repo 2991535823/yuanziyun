@@ -19,6 +19,7 @@ public class Utility {
         if (!TextUtils.isEmpty(response)){
             try {
                 JSONObject JsonOrgsdata=new JSONObject(response);
+//                String responseStatus=JsonOrgsdata.getString("");
                 String Orgsdata=JsonOrgsdata.getString("data");
                 JSONArray OrgsArray=new JSONArray(Orgsdata);
                 for (int i=0;i<OrgsArray.length();i++){
@@ -93,5 +94,20 @@ public class Utility {
             e.printStackTrace();
         }
         return null;
+    }
+    public static boolean handleLoginResponse(String response){
+        if (!TextUtils.isEmpty(response)){
+            try {
+                JSONObject JsonOrgsdata=new JSONObject(response);
+                int responseStatus=JsonOrgsdata.getInt("code");
+                if (responseStatus==200){
+                    return true;
+                }
+
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

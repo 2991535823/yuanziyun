@@ -26,6 +26,7 @@ import com.myapp.yuanzi.db.Device;
 import com.myapp.yuanzi.db.DeviceGroup;
 import com.myapp.yuanzi.db.Orgs;
 import com.myapp.yuanzi.util.HttpUtil;
+import com.myapp.yuanzi.util.LogUtil;
 import com.myapp.yuanzi.util.Utility;
 
 import org.jetbrains.annotations.NotNull;
@@ -86,7 +87,7 @@ public class ChooseDeviceFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (selectedLevel==LEVEL_ORGS){
                     selectedOrg=orgsList.get(i);//获取org对象
-                    Log.d(ConstStrings.TAG, "onItemClick: "+selectedOrg.getOrgCode());
+                    LogUtil.d(ConstStrings.TAG, "onItemClick: "+selectedOrg.getOrgCode());
                     device.setDeviceOrgId(selectedOrg.getOrgCode());
                     ConstStrings.ORG_ID=selectedOrg.getOrgCode();
                     //查询组
@@ -100,7 +101,7 @@ public class ChooseDeviceFragment extends Fragment {
                     //给device对象添加相应属性
                     device.setDeviceId(selectedDevice.getDeviceId());
                     device.setDeviceNumber(selectedDevice.getDeviceNumber());
-                    Log.d(ConstStrings.TAG, "onItemClick: "+device.getDeviceOrgId()+" number:"+device.getDeviceNumber());
+                    LogUtil.d(ConstStrings.TAG, "onItemClick: "+device.getDeviceOrgId()+" number:"+device.getDeviceNumber());
                     //启动设备界面
                     if (getActivity() instanceof MainActivity){
                         Intent intent=new Intent(getActivity(), MsgActivity.class);
@@ -205,7 +206,7 @@ public class ChooseDeviceFragment extends Fragment {
                     @Override
                     public void run() {
                         closeProgressDialog();
-                        Log.d("queryFromServer", "onFailure: ");
+                        LogUtil.d("queryFromServer", "onFailure: ");
                     }
                 });
 
@@ -214,7 +215,7 @@ public class ChooseDeviceFragment extends Fragment {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseText=response.body().string();
-                Log.d("queryFromServer1", responseText);
+                LogUtil.d("queryFromServer1", responseText);
                 boolean result=false;
                 if ("orgs".equals(type)){
                     result= Utility.handleOrgsResponse(responseText);
@@ -225,7 +226,7 @@ public class ChooseDeviceFragment extends Fragment {
                     result=Utility.handleDeviceResponse(responseText,selectedGroup.getDeviceGroupId());
                 }
                 if (result){
-                    Log.d("queryFromServer", result+"");
+                    LogUtil.d("queryFromServer", result+"");
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
