@@ -40,7 +40,7 @@ public class MsgActivity extends AppCompatActivity {
     private ScrollView deviceLayout;
     //title控件，相关信息
     private Button navBtn;
-    private TextView deviceNumber;
+    private TextView deviceNumberText;
     private TextView msgPageInfo;
     //device_status_now控件，机器相应工作状态
     private TextView startTimeText;
@@ -52,6 +52,8 @@ public class MsgActivity extends AppCompatActivity {
     private DeviceData deviceData;
     public SwipeRefreshLayout refreshLayout;
     public DrawerLayout drawerLayout;
+    private String  deviceNumberString;
+    private int orgid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +65,7 @@ public class MsgActivity extends AppCompatActivity {
         setContentView(R.layout.activity_msg);
         deviceLayout=findViewById(R.id.device_layout);
         navBtn=findViewById(R.id.open_nav_btn);
-        deviceNumber=findViewById(R.id.device_name);
+        deviceNumberText=findViewById(R.id.device_name);
         msgPageInfo=findViewById(R.id.page_msg);
         startTimeText=findViewById(R.id.device_start_time);
         stopTimeText=findViewById(R.id.device_stop_time);
@@ -74,45 +76,24 @@ public class MsgActivity extends AppCompatActivity {
         drawerLayout=findViewById(R.id.drawer_layout);
         navBtn=findViewById(R.id.open_nav_btn);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        final String  deviceNumber;
-        final int orgid;
-//        try {
-//            deviceData=(DeviceData)getIntent().getSerializableExtra("devicedata");
-//            orgid=deviceData.getDeviceOrgId();
-//            deviceNumber=deviceData.getDeviceNumber();
-//        }catch (NullPointerException e){
-//            e.printStackTrace();
-//        }
 
-
-        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         String deviceInfo=sharedPreferences.getString("info",null);
-//        orgid=sharedPreferences.getInt("orgid",0);
-//        deviceNumber=sharedPreferences.getString("devicenumber",null);
-        if (deviceInfo!=null){
-            Log.d(ConstStrings.TAG, deviceInfo);
-            Msg deviceMsg= Utility.handMsgResponse(deviceInfo);
-            List<MsgItem> msgItemList=deviceMsg.msgItemList;//信息列表
-            MsgItem deviceLastMsg=msgItemList.get(0);//最后一条信息
-            deviceNumber=deviceLastMsg.deviceNumber;
-            orgid=ConstStrings.ORG_ID;
-            showAllMsg(deviceMsg);
-            //显示数据
-        }else {
-            //网络请求
-
-            deviceData=(DeviceData)getIntent().getSerializableExtra("devicedata");//意图里面获取deviceNumber
-            deviceLayout.setVisibility(View.INVISIBLE);//设置页面不可见
-            orgid=deviceData.getDeviceOrgId();deviceNumber=deviceData.getDeviceNumber();
-            requestDeviceStatus(orgid,deviceNumber);//发起网络请求
-        }
+        deviceData=(DeviceData)getIntent().getSerializableExtra("devicedata");
+        deviceLayout.setVisibility(View.INVISIBLE);//设置页面不可见
+        orgid=deviceData.getDeviceOrgId();deviceNumberString=deviceData.getDeviceNumber();
+        requestDeviceStatus(orgid,deviceNumberString);//发起网络请求
+        //下拉数据刷新事件
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestDeviceStatus(orgid,deviceNumber);
-                Log.d(ConstStrings.TAG, "onRefresh: "+orgid+deviceNumber);
+                orgid=sharedPreferences.getInt("orgid",0);
+                deviceNumberString=sharedPreferences.getString("devicenumber",null);
+                requestDeviceStatus(orgid,deviceNumberString);
+                Log.d(ConstStrings.TAG, "onRefresh: "+orgid+deviceNumberString);
             }
         });
+        //抽屉按钮事件
         navBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,52 +101,88 @@ public class MsgActivity extends AppCompatActivity {
             }
         });
     }
-    private void showAllMsg(Msg msg){
+    private void showAllMsg(Msg msg,String deviceNumber){
         List<MsgItem> msgItemList=msg.msgItemList;//信息列表
-        MsgItem deviceLastMsg=msgItemList.get(0);//最后一条信息
-        String lastinfo=deviceLastMsg.dtuSendCloudMsg;
-        Log.d(ConstStrings.TAG, "showAllMsg: "+lastinfo);
-        deviceNumber.setText(deviceLastMsg.deviceNumber);
-        deviceStatusHistoryLayout.removeAllViews();
-        for (MsgItem item:msgItemList){
-            View view= LayoutInflater.from(this).inflate(R.layout.device_history_msg_item,
-                    deviceStatusHistoryLayout,false);
-            TextView testmsg=view.findViewById(R.id.device_history_start_time);
-            testmsg.setText(StringUtil.hexToAscii(item.dtuSendCloudMsg));
-            deviceStatusHistoryLayout.addView(view);
+        //判断信息
+        String lastInfo;
+        MsgItem deviceLastMsg;
+        if (msgItemList.size()>0){
+            deviceLastMsg=msgItemList.get(0);//DTU发往原子云的最后一条信息
+            lastInfo=deviceLastMsg.dtuSendCloudMsg;//或者数据
+            Log.d(ConstStrings.TAG, "showAllMsg: "+lastInfo);//打印数据
+            deviceNumberText.setText(deviceLastMsg.deviceNumber);//显示设备编号
+            //lastInfo数据解析，展示
+
+
+            deviceStatusHistoryLayout.removeAllViews();//移除之前的数据
+            for (MsgItem item:msgItemList){
+                View view= LayoutInflater.from(this).inflate(R.layout.device_history_msg_item,
+                        deviceStatusHistoryLayout,false);
+                //展示历史消息的4个控件
+                TextView deviceHistoryStartTime=view.findViewById(R.id.device_history_start_time);
+                TextView deviceHistoryStopTime=view.findViewById(R.id.device_history_stop_time);
+                TextView deviceHistoryRestTime=view.findViewById(R.id.device_history_rest_time);
+                TextView deviceHistoryPulse=view.findViewById(R.id.device_history_pulse);
+                deviceHistoryStartTime.setText(StringUtil.hexToAscii(item.dtuSendCloudMsg));
+
+                deviceStatusHistoryLayout.addView(view);
+            }
+            deviceLayout.setVisibility(View.VISIBLE);
         }
-        deviceLayout.setVisibility(View.VISIBLE);
+        else {
+            lastInfo="该DTU可能没有发送消息到云平台";
+            deviceLastMsg=new MsgItem();
+            deviceLastMsg.deviceNumber=deviceNumber;
+            deviceNumberText.setText(deviceLastMsg.deviceNumber);//显示设备编号
+            deviceStatusHistoryLayout.removeAllViews();//移除之前的数据
+            View view= LayoutInflater.from(this).inflate(R.layout.device_history_msg_error,
+                        deviceStatusHistoryLayout,false);
+                //展示错误消息控件
+                TextView deviceHistoryErrorText=view.findViewById(R.id.device_history_msg_error_text);
+                deviceHistoryErrorText.setText(lastInfo);
+                deviceStatusHistoryLayout.addView(view);
+            deviceLayout.setVisibility(View.VISIBLE);
+        }
+
 
     }
-    private void requestDeviceStatus(final int orgid, final String devicenumber){
-        Log.d(ConstStrings.TAG, "requestDeviceStatus: "+orgid+"number:"+devicenumber);
-        String url= ConstStrings.HTTP_ADDRESS+"/orgs/"+orgid+"/devicepacket/"+devicenumber+"?limit=10";
-        Log.d(ConstStrings.TAG, "\nrequestDeviceStatus: "+url);
+    public void requestDeviceStatus(final int orgid, final String devicenumber){
+        Log.d(ConstStrings.TAG, "requestDeviceStatus: "+orgid+"number:"+devicenumber);//打印形参
+
+        String url= ConstStrings.HTTP_ADDRESS+"/orgs/"+orgid+"/devicepacket/"+devicenumber+"?limit=10";//拼接Url limit限制为10;
+
+        Log.d(ConstStrings.TAG, "\nrequestDeviceStatus: "+url);//打印URL
+        //发起网络请求
         HttpUtil.sendOkHttpRequest(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
                 Log.d(ConstStrings.TAG, "onFailure: httpRequest");
                 refreshLayout.setRefreshing(false);
+                //toast提醒
+                //code
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 final String responseText=response.body().string();
-                Log.d(ConstStrings.TAG, "onResponse: "+responseText);
-                final Msg msg=Utility.handMsgResponse(responseText);
+                Log.d(ConstStrings.TAG, "onResponse: "+responseText);//打印返回的原始数据
+                final Msg msg=Utility.handMsgResponse(responseText);//数据解析为msg (json实体类)
+                //主线程Ui操作
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (msg!=null){
                             SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(MsgActivity.this).edit();
+                            //把三个数据存储
                             editor.putString("info",responseText);
                             editor.putInt("orgid",orgid);
                             editor.putString("devicenumber",devicenumber);
                             editor.apply();
-                            showAllMsg(msg);
+                            //展示数据
+                            showAllMsg(msg,devicenumber);
                         }else {
-                            Log.d(ConstStrings.TAG, "onResponse wrong");
+                            Log.d(ConstStrings.TAG, "handMsgResponse wrong");
                         }
                         refreshLayout.setRefreshing(false);
                     }

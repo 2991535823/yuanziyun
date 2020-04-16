@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import com.myapp.yuanzi.ConstString.ConstStrings;
 import com.myapp.yuanzi.DeviceData;
+import com.myapp.yuanzi.MainActivity;
 import com.myapp.yuanzi.MsgActivity;
 import com.myapp.yuanzi.R;
 import com.myapp.yuanzi.db.Device;
@@ -95,14 +96,25 @@ public class ChooseDeviceFragment extends Fragment {
                     device.setDeviceGroupId(selectedGroup.getDeviceGroupId());
                     queryDevice();
                 }else if(selectedLevel==LEVEL_DEVICE){
-                    selectedDevice=deviceList.get(i);
+                    selectedDevice=deviceList.get(i);//获取当前选择的device
+                    //给device对象添加相应属性
                     device.setDeviceId(selectedDevice.getDeviceId());
                     device.setDeviceNumber(selectedDevice.getDeviceNumber());
+                    Log.d(ConstStrings.TAG, "onItemClick: "+device.getDeviceOrgId()+" number:"+device.getDeviceNumber());
                     //启动设备界面
-                    Intent intent=new Intent(getActivity(), MsgActivity.class);
-                    intent.putExtra("devicedata",device);
-                    startActivity(intent);
-                    getActivity().finish();
+                    if (getActivity() instanceof MainActivity){
+                        Intent intent=new Intent(getActivity(), MsgActivity.class);
+                        intent.putExtra("devicedata",device);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                    if (getActivity() instanceof MsgActivity){
+                        MsgActivity msgActivity=(MsgActivity)getActivity();
+                        msgActivity.drawerLayout.closeDrawers();
+                        msgActivity.refreshLayout.setRefreshing(true);
+                        msgActivity.requestDeviceStatus(device.getDeviceOrgId(),device.getDeviceNumber());
+                    }
+
                 }
             }
         });
