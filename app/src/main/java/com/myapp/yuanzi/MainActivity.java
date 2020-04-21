@@ -2,10 +2,13 @@ package com.myapp.yuanzi;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
+import com.myapp.yuanzi.ConstString.ConstStrings;
 
 public class MainActivity extends AppCompatActivity {
     private String deviceNumber;
@@ -29,4 +32,5 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
+
 }

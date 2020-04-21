@@ -2,6 +2,7 @@ package com.myapp.yuanzi;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import okhttp3.Response;
 public class LoginActivity extends AppCompatActivity {
     private EditText userToken;
     private Button loginBtn;
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,35 +38,44 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn=findViewById(R.id.login);
         SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(this).edit();
-        LogUtil.d(ConstStrings.TAG,sharedPreferences.getString("lastToken","null"));
+        LogUtil.d(sharedPreferences.getString("lastToken","null"));
         if (sharedPreferences.getString("lastToken",null)!=null){
             userToken.setText(sharedPreferences.getString("lastToken",null));
         }
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 final String Token=userToken.getText().toString();
                 if (!("".equals(Token))){
+                    showProgressDialog();
                     String url= ConstStrings.HTTP_ADDRESS+"/orgs";
                     ConstStrings.TOKEN=Token;
-                    LogUtil.d(ConstStrings.TAG,ConstStrings.TOKEN);
+                    LogUtil.d(ConstStrings.TOKEN);
                     HttpUtil.sendOkHttpRequest(url, new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
                             //toast
-                            showToast("糟糕网络怎么没有连接");
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast("糟糕网络怎么没有连接");
+                                    closeProgressDialog();
+                                }
+                            });
                         }
 
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                             String responseText=response.body().string();
-                            LogUtil.d(ConstStrings.TAG,responseText);
+                            LogUtil.d(responseText);
                             if (Utility.handleLoginResponse(responseText)){
                                 //可以做跳转
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_LONG).show();
+                                        closeProgressDialog();
                                     }
                                 });
                                 editor.putString("lastToken",Token);
@@ -76,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        closeProgressDialog();
                                         Toast.makeText(LoginActivity.this,"TOKEN错了呢，怎么这么粗心",Toast.LENGTH_LONG).show();
                                     }
                                 });
@@ -93,5 +105,19 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void showToast(String msg){
         Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
+    }
+
+    private void showProgressDialog(){
+        if (progressDialog==null){
+            progressDialog=new ProgressDialog(LoginActivity.this);
+            progressDialog.setMessage(ConstStrings.LOGIN_MSG);
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
+    }
+    private void closeProgressDialog(){
+        if (progressDialog!=null){
+            progressDialog.dismiss();
+        }
     }
 }

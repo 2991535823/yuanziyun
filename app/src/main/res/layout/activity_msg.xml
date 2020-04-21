@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@android:color/holo_green_light">
+    android:background="@color/colorPrimary">
     <androidx.drawerlayout.widget.DrawerLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,19 +15,22 @@
             android:id="@+id/swipe_Layout">
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/device_layout">
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:fitsSystemWindows="true">
                     <include layout="@layout/title"/>
                     <include layout="@layout/device_status_now"/>
                     <include layout="@layout/device_status" />
-                    <include layout="@layout/chat" />
+                    <include layout="@layout/chat"/>
                 </LinearLayout>
             </ScrollView>
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"/>-->
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         <fragment
             android:layout_width="match_parent"
