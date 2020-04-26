@@ -49,6 +49,7 @@ public class WebSocketUtilManager {
             public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
                 if (listener!=null){
                     listener.onDisConnected();
+                    LogUtil.d("ws closed");
                 }
             }
 
@@ -61,6 +62,8 @@ public class WebSocketUtilManager {
             public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, @Nullable Response response) {
                 if (listener!=null&& !TextUtils.isEmpty(t.getMessage())){
                     listener.onFailed(t.getMessage());
+                    LogUtil.d("ws fail");
+
                 }
             }
 

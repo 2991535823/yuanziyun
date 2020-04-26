@@ -291,7 +291,7 @@ public class MsgActivity extends AppCompatActivity implements WebSocketUtilManag
     public void onFailed(final String msg) {
         LogUtil.e(msg);
         //重连
-        connectDevice(deviceData);
+        //connectDevice(deviceData);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

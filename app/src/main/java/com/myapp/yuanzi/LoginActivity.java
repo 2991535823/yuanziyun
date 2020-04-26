@@ -5,12 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.myapp.yuanzi.ConstString.ConstStrings;
@@ -30,12 +32,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText userToken;
     private Button loginBtn;
     private ProgressDialog progressDialog;
+    private TextView gitInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         userToken=findViewById(R.id.token);
         loginBtn=findViewById(R.id.login);
+        gitInfo=findViewById(R.id.git_info);
         SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(this).edit();
         LogUtil.d(sharedPreferences.getString("lastToken","null"));
@@ -100,6 +104,14 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
 
+            }
+        });
+        gitInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri=Uri.parse("https://github.com/2991535823/yuanziyun");
+                Intent intent=new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
             }
         });
     }
