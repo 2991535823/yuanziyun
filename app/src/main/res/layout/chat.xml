@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.cardview.widget.CardView android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="#fff"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_gravity="bottom">
-
-    <EditText
-        android:id="@+id/send_msg_to_dtu"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="5"
-        android:hint="发送消息给设备"
-        android:inputType="text" />
-    <Button
-        android:layout_width="0dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="send"
-        android:id="@+id/send_msg_btn"
-        />
-</LinearLayout>
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_gravity="bottom">
+
+        <EditText
+            android:id="@+id/send_msg_to_dtu"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:hint="输入消息"
+            android:inputType="text"
+            android:background="@drawable/search_bg"/>
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/send_msg_btn"
+            android:background="@drawable/ic_coldrisk"
+            />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

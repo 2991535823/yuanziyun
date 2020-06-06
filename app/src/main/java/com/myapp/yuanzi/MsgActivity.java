@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -55,7 +54,7 @@ public class MsgActivity extends AppCompatActivity implements WebSocketUtilManag
     private TextView devicePulseText;
     //device_status控件,历史消息
     private LinearLayout deviceStatusHistoryLayout;
-    private DeviceData deviceData;
+    public DeviceData deviceData;
     public SwipeRefreshLayout refreshLayout;
     public DrawerLayout drawerLayout;
     private String  deviceNumberString;
@@ -74,6 +73,7 @@ public class MsgActivity extends AppCompatActivity implements WebSocketUtilManag
         }
         setContentView(R.layout.activity_msg);
         deviceData=(DeviceData)getIntent().getSerializableExtra("devicedata");
+        LogUtil.e(deviceData.getDeviceNumber());
         deviceLayout=findViewById(R.id.device_layout);
         navBtn=findViewById(R.id.open_nav_btn);
         deviceNumberText=findViewById(R.id.device_name);
@@ -180,10 +180,10 @@ public class MsgActivity extends AppCompatActivity implements WebSocketUtilManag
         String lastInfo;
         MsgItem deviceLastMsg;
         if (msgItemList.size()>0){
-            deviceLastMsg=msgItemList.get(0);//DTU发往原子云的最后一条信息
-            lastInfo=deviceLastMsg.dtuSendCloudMsg;//数据
-            LogUtil.d("showAllMsg: "+lastInfo);//打印数据
-            deviceNumberText.setText(deviceLastMsg.deviceNumber);//显示设备编号
+//            deviceLastMsg=msgItemList.get(0);//DTU发往原子云的最后一条信息
+//            lastInfo=deviceLastMsg.dtuSendCloudMsg;//数据
+//            LogUtil.d("showAllMsg: "+lastInfo);//打印数据
+            deviceNumberText.setText(deviceData.getDeviceNumber());
             //lastInfo数据解析，展示
 
 
@@ -191,13 +191,13 @@ public class MsgActivity extends AppCompatActivity implements WebSocketUtilManag
             for (MsgItem item:msgItemList){
                 View view= LayoutInflater.from(this).inflate(R.layout.device_history_msg_item,
                         deviceStatusHistoryLayout,false);
-                //展示历史消息的4个控件
-                TextView deviceHistoryStartTime=view.findViewById(R.id.device_history_start_time);
-                TextView deviceHistoryStopTime=view.findViewById(R.id.device_history_stop_time);
-                TextView deviceHistoryRestTime=view.findViewById(R.id.device_history_rest_time);
-                TextView deviceHistoryPulse=view.findViewById(R.id.device_history_pulse);
-                deviceHistoryStartTime.setText(StringUtil.hexToAscii(item.dtuSendCloudMsg));
-                deviceHistoryRestTime.setText(item.dtuArriveCloudTime);
+                //展示历史消息的2个控件
+                TextView deviceHistoryMsg=view.findViewById(R.id.device_history_Msg);
+
+                TextView deviceHistoryMsgTime=view.findViewById(R.id.device_history_Msg_time);
+
+                deviceHistoryMsg.setText(StringUtil.hexToAscii(item.dtuSendCloudMsg));
+                deviceHistoryMsgTime.setText(item.dtuArriveCloudTime);
                 LogUtil.e(item.dtuSendCloudMsg);
                 deviceStatusHistoryLayout.addView(view);
             }
@@ -208,7 +208,7 @@ public class MsgActivity extends AppCompatActivity implements WebSocketUtilManag
             String info="别着急，可能等会就有数据了\n\n";
             deviceLastMsg=new MsgItem();
             deviceLastMsg.deviceNumber=deviceNumber;
-            deviceNumberText.setText(deviceLastMsg.deviceNumber);//显示设备编号
+            deviceNumberText.setText(deviceData.getDeviceNumber());//显示设备编号
             deviceStatusHistoryLayout.removeAllViews();//移除之前的数据
             for (int i=0;i<10;i++){
                 View view= LayoutInflater.from(this).inflate(R.layout.device_history_msg_error,
@@ -295,7 +295,7 @@ public class MsgActivity extends AppCompatActivity implements WebSocketUtilManag
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MsgActivity.this,"重连中:caused by:"+msg,Toast.LENGTH_LONG).show();
+                Toast.makeText(MsgActivity.this,"连接断开Caused By:"+msg,Toast.LENGTH_SHORT).show();
             }
         });
     }

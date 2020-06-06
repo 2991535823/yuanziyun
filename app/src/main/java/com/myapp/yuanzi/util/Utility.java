@@ -1,7 +1,7 @@
 package com.myapp.yuanzi.util;
 
 import android.text.TextUtils;
-import android.util.Log;
+
 
 import com.google.gson.Gson;
 import com.myapp.yuanzi.db.Device;
@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 public class Utility {
     public static boolean handleOrgsResponse(String response){
-        Log.d("response", response);
+       LogUtil.d( response);
         if (!TextUtils.isEmpty(response)){
             try {
                 JSONObject JsonOrgsdata=new JSONObject(response);
@@ -40,7 +40,7 @@ public class Utility {
     }
     //处理组数据
     public static boolean handleGroupResponse(String response,int org_Id){
-        Log.d("response", response);
+        LogUtil.d(response);
         if (!TextUtils.isEmpty(response)){
             try {
                 JSONObject JsonGroupdata=new JSONObject(response);

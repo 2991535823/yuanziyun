@@ -8,7 +8,7 @@ public class LogUtil {
     private static final int WARN= 3;
     private static final int ERROR = 4;
     private static final int NOTHING = 5;
-    public static int LEVEL=DEBUG;
+    public static int LEVEL=NOTHING;
     private static String TAG="G_BUG";
     private final static int LOG_LENGTH = 2000;
     public static void d(String msg){

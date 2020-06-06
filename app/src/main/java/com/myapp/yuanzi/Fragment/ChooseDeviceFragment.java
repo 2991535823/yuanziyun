@@ -117,11 +117,14 @@ public class ChooseDeviceFragment extends Fragment {
                             msgActivity.subStatus=false;
                             msgActivity.webSocketUtilManager.close();
                             msgActivity.connectDevice(device);
+                            msgActivity.deviceData=device;
+
                         }
 
                         msgActivity.drawerLayout.closeDrawers();
                         msgActivity.refreshLayout.setRefreshing(true);
                         msgActivity.requestDeviceStatus(device.getDeviceOrgId(),device.getDeviceNumber());
+
 //                        msgActivity.webSocketUtilManager.subDevice();
                     }
 

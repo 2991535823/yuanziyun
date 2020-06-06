@@ -7,7 +7,7 @@ public class ConstStrings {
     public static final String HEADER = "token";
     public static final String PROGRESS_MSG = "正在加载数据中，稍等么么哒";
     public static final String LOGIN_MSG = "全力登录中";
-    public static final String TITLE_MSG = "西南大学原子云平台DEBUG";
+    public static final String TITLE_MSG = "原子云";
     public static int ORG_ID;
-    public static final String TAG = "yzbug";
+    public static final String TAG = "atomBug";
 }

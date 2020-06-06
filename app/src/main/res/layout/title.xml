@@ -15,6 +15,7 @@
         android:id="@+id/device_name"
         android:textColor="#fff"
         android:textSize="20sp"
+
         android:layout_centerInParent="true"/>
 <!--    <TextView-->
 <!--        android:layout_width="wrap_content"-->

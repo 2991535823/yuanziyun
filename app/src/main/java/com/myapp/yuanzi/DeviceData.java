@@ -40,4 +40,13 @@ public class DeviceData implements Serializable {
     private int deviceId;//设备id，设备连接状态接口调用
     private String deviceNumber;//设备编号,设备历史消息接口调用
 
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    private String deviceName;
 }
